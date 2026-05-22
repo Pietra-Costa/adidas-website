@@ -1,7 +1,7 @@
-import NewCanvas from "@/components/NewCanvas";
+import ViewCanvas from "@/components/ViewCanvas";
 
 export default function Home() {
   return (
-    <NewCanvas/>
+    <ViewCanvas/>
   );
 }
