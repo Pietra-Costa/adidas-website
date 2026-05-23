@@ -3,7 +3,9 @@ import * as THREE from 'three'
 import { useMainStudioTextures } from '../../lib/useTextures'
 import { createMaterials } from '../../lib/material'
 import { studioTextures } from '../../lib/textures'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
 
 
 type GLFTResult = {
@@ -21,6 +23,19 @@ export function MainStudioModel() {
     const mat = createMaterials(textures) as Record<keyof typeof studioTextures.main, THREE.MeshBasicMaterial>
 
     const [envMaterial, setEnvMaterial] = useState<THREE.MeshBasicMaterial>(mat.defaultStudio)
+
+    const meshRefs = useRef<(THREE.Mesh | null)[]>([])
+
+    const tlRefs = useRef<GSAPTimeline[]>([])
+
+    useGSAP(() => {
+        if (!meshRefs.current) return;
+        meshRefs.current.forEach((mesh, index) => {
+            if (!mesh) return;
+            tlRefs.current[index] = gsap.timeline({paused: true}).to(mesh.rotation, {y:0, duration: 1, ease: 'power1.inOut'})
+            .to(mesh.scale, {x:1.05, y:1.05, z:1.05, duration: 1, ease: 'power1.inOut'}, "<")
+        })
+    })
 
     const shirts = [
         {
@@ -50,13 +65,15 @@ export function MainStudioModel() {
     ]
 
 
-    function enterHandler(material: THREE.MeshBasicMaterial) {
+    function enterHandler(index: number,material: THREE.MeshBasicMaterial) {
         document.body.style.cursor = 'pointer';
         setEnvMaterial(material)
+        tlRefs.current[index].play()
     }
 
-    function leaveHandler() {
+    function leaveHandler(index: number) {
         document.body.style.cursor = 'auto';
+        tlRefs.current[index].reverse()
     }
 
     return (
@@ -68,13 +85,17 @@ export function MainStudioModel() {
 
             {shirts.map((shirt, index) => (
                 <mesh
+                ref={(m) => {
+                    if (!m) return;
+                    meshRefs.current[index] = m;
+                }}
                     key={index}
                     geometry={shirt.geometry}
                     material={shirt.material}
                     position={shirt.position}
                     rotation={shirt.rotation}
-                    onPointerEnter={() => enterHandler(shirt.hoverMat)}
-                    onPointerLeave={() => leaveHandler()}
+                    onPointerEnter={() => enterHandler(index,shirt.hoverMat)}
+                    onPointerLeave={() => leaveHandler(index)}
                 />
             ))}
 
