@@ -3,17 +3,16 @@ import * as THREE from 'three'
 import { useMainStudioTextures } from '../../lib/useTextures'
 import { createMaterials } from '../../lib/material'
 import { studioTextures } from '../../lib/textures'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-
+import { useRouter } from 'next/navigation'
 
 type GLFTResult = {
     nodes: {
         [name: string]: THREE.Mesh
     }
 }
-
 
 export function MainStudioModel() {
 
@@ -27,6 +26,8 @@ export function MainStudioModel() {
     const meshRefs = useRef<(THREE.Mesh | null)[]>([])
 
     const tlRefs = useRef<GSAPTimeline[]>([])
+
+    const router = useRouter()
 
     useGSAP(() => {
         if (!meshRefs.current) return;
@@ -64,6 +65,12 @@ export function MainStudioModel() {
         }
     ]
 
+    useEffect(() => {
+        shirts.forEach((shirt) => {
+            router.prefetch(`/shirts/${shirt.slug}`)
+        })
+    }, [router])
+
 
     function enterHandler(index: number,material: THREE.MeshBasicMaterial) {
         document.body.style.cursor = 'pointer';
@@ -74,6 +81,10 @@ export function MainStudioModel() {
     function leaveHandler(index: number) {
         document.body.style.cursor = 'auto';
         tlRefs.current[index].reverse()
+    }
+
+    function handleClick(slug: string) {
+        router.push(`/shirts/${slug}`)
     }
 
     return (
@@ -96,6 +107,7 @@ export function MainStudioModel() {
                     rotation={shirt.rotation}
                     onPointerEnter={() => enterHandler(index,shirt.hoverMat)}
                     onPointerLeave={() => leaveHandler(index)}
+                    onClick={() => handleClick(shirt.slug)}
                 />
             ))}
 
