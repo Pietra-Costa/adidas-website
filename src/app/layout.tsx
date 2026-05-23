@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {  Mulish } from "next/font/google";
 import "./globals.css";
+import ViewCanvas from "@/components/ViewCanvas";
 
 const mulish = Mulish({
   subsets: ['cyrillic'],
@@ -21,7 +22,7 @@ export default function RootLayout({
       lang="en"
       className={`${mulish.className} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><ViewCanvas/>{children}</body>
     </html>
   );
 }

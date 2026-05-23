@@ -1,7 +1,13 @@
-import ViewCanvas from "@/components/ViewCanvas";
+'use client'
+import { MainStudioModel } from "@/components/MainStudioModel";
+import { View } from "@react-three/drei";
 
 export default function Home() {
   return (
-    <ViewCanvas/>
+    <>
+    <View className="w-full h-dvh">
+      <MainStudioModel/>
+    </View>
+    </>
   );
 }

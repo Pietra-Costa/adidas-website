@@ -1,9 +1,10 @@
-import React from 'react'
+import { Canvas } from '@react-three/fiber'
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
+  return 
+  <Canvas>
+
+  </Canvas>
 }
 
 export default page
